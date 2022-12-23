@@ -10,7 +10,7 @@ class e(hyprland.Events):
         self.c.decoration.rounding = 12
         self.c.general.border_size = 10
     
-    def on_any(self, event, *args):
+    def on_openwindow(self, waddr, wname, wclass, wtitle):
         self.c.general.border_size = random.randint(0, 20)
 
 
