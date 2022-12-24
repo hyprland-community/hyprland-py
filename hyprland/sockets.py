@@ -1,7 +1,7 @@
 import socket
 import os
 
-class command:
+class keyword:
     def __setattr__(self, attr, value):
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
             sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")

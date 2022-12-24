@@ -2,7 +2,7 @@
 
 from . import sockets
 
-class General(sockets.command):
+class General(sockets.keyword):
 
     sensitivity = 1.0
     """ mouse sensitivity (legacy, may cause bugs if not 1, prefer input:sensitivity) """
@@ -37,7 +37,7 @@ class General(sockets.command):
     apply_sens_to_raw = False
     """ if on, will also apply the sensitivity to raw mouse output (e.g. sensitivity in games) NOTICE: really not recommended. """
 
-class Decoration(sockets.command):
+class Decoration(sockets.keyword):
 
     rounding = 0
     """ rounded corners’ radius (in layout px) """
@@ -105,12 +105,12 @@ class Decoration(sockets.command):
     screen_shader = None
     """ a path to a custom shader to be applied at the end of rendering. See examples/screenShader.frag for an example. """
 
-class Animations(sockets.command):
+class Animations(sockets.keyword):
 
     enabled = True
     """ enable animations """
 
-class Input(sockets.command):
+class Input(sockets.keyword):
 
     kb_model = None
     """ Appropriate XKB keymap parameter. See the note below. """
@@ -166,7 +166,7 @@ class Input(sockets.command):
     float_switch_override_focus = 1
     """ If enabled (1 or 2), focus will change to the window under the cursor when changing from tiled-to-floating and vice versa. If 2, focus will also follow mouse on float-to-float switches. """
 
-class Gestures(sockets.command):
+class Gestures(sockets.keyword):
 
     workspace_swipe = False
     """ enable workspace swipe gesture """
@@ -192,7 +192,7 @@ class Gestures(sockets.command):
     workspace_swipe_forever = False
     """ if enabled, swiping will not clamp at the neighboring workspaces but continue to the further ones. """
 
-class Misc(sockets.command):
+class Misc(sockets.keyword):
 
     disable_hyprland_logo = False
     """ disables the hyprland logo background. :( """
@@ -230,7 +230,7 @@ class Misc(sockets.command):
     no_direct_scanout = False
     """ Disables direct scanout. Direct scanout attempts to reduce lag when there is only one fullscreen application on a screen (e.g. game) """
 
-class Binds(sockets.command):
+class Binds(sockets.keyword):
 
     pass_mouse_when_bound = False
     """ if disabled, will not pass the mouse events to apps / dragging windows around if a keybind has been triggered. """
