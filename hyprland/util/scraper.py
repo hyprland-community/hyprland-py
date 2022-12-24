@@ -62,7 +62,7 @@ if __name__ == '__main__':
         f.write('from . import sockets\n\n')
         setting_class = f'\nclass Defaults:\n\n    def __init__(self):\n'
         for section in dat:
-            f.write(f'''class {section}(sockets._command):\n\n''')
+            f.write(f'''class {section}(sockets.command):\n\n''')
             for setting in dat[section]:
                 f.write(f'    {setting["name"].replace(".","__")} = {parse_val(setting["default"],setting["type"])}\n')
                 f.write(f'    """ {setting["desc"]} """\n\n')
