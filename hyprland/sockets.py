@@ -64,7 +64,18 @@ class BindListener:
         
 class EventListener:
     
-    async def connect(self):
+    def start(self):
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+            sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
+            yield "connect"
+            while True:
+                data = sock.recv(1024)
+                if not data:
+                    break
+                yield data.decode('utf-8')
+
+
+    async def async_start(self):
         reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
         yield "connect"
         while True:
