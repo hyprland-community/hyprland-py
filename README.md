@@ -18,20 +18,23 @@ An unofficial python wrapper for Hyprland's IPC supposed to somewhat work like a
 change window border to a random number between 0 and 20 everytime a new window is opened
 ```py
 import hyprland
-import random
 
-
-class e(hyprland.Events):
-
-    def on_connect(self):
+class Config(hyprland.Events):
+    def __init__(self):
         self.c = hyprland.Config()
-
-        self.c.decoration.rounding = 12
-        self.c.general.border_size = 10
+        super().__init__()
     
-    def on_openwindow(self, waddr, wname, wclass, wtitle):
-        self.c.general.border_size = random.randint(0, 20)
+    async def on_connect(self):
+        print("Connected to the server!")
+        self.c.general.border_size = 10
+        await self.c.decoration.set_rounding(10)
 
 
-e().connect()
+    async def on_any(self,*args,**kwargs):
+        print(f"any: {args}")
+    
+
+c = Config()
+
+c.async_connect()
 ```
