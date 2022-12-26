@@ -12,6 +12,7 @@ An unofficial python wrapper for Hyprland's IPC supposed to somewhat work like a
 - [ ] hyprland info
 - [ ] misc hyprland commands(change workspace, move active window etc...)
 - [ ] build `settings.py` file based on current hl version
+- [ ] docs
 - [ ] widgets??
 
 # Example
