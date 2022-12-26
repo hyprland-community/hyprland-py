@@ -64,7 +64,10 @@ if __name__ == '__main__':
         for section in dat:
             f.write(f'''class {section}(sockets.keyword):\n\n''')
             for setting in dat[section]:
-                f.write(f'    {setting["name"].replace(".","__")} = {parse_val(setting["default"],setting["type"])}\n')
+                name = setting["name"].replace(".","__")
+                parsed_val = parse_val(setting["default"],setting["type"])
+                f.write(f'    {name} = {parsed_val}\n')
                 f.write(f'    """ {setting["desc"]} """\n\n')
+                f.write(f'    async def set_{name}(self,x:\'{type(parsed_val).__name__.replace("NoneType","None")}\'):\n        """ {setting["desc"]} """\n        await self.send_cmd(\"{name}\",x)\n        self.__setattr__(\"{name}\",x,ignore=True)\n\n\n')
             setting_class += f'        self.{section.lower()} = {section}()\n'
         f.write(setting_class)
