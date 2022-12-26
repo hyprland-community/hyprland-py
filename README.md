@@ -4,10 +4,15 @@ An unofficial python wrapper for Hyprland's IPC supposed to somewhat work like a
 
 # Todo
 
+- [x] async sockets
 - [x] change config options
 - [x] event listeners
 - [ ] keybinds
 - [ ] windowrules
+- [ ] hyprland info
+- [ ] misc hyprland commands(change workspace, move active window etc...)
+- [ ] build `settings.py` file based on current hl version
+- [ ] 
 
 # Example
 change window border to a random number between 0 and 20 everytime a new window is opened
