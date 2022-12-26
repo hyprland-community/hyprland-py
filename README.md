@@ -1,5 +1,5 @@
 # Hyprland-py
-An unofficial python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua
+An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua
 
 
 # Todo
