@@ -18,6 +18,10 @@ class Config(settings.Defaults):
     async def add_bind(self, bind):
         await self.bind_listener.send_bind(bind)
         self._binds.append(bind)
+    
+    async def add_binds(self, binds):
+        for bind in binds:
+            await self.add_bind(bind)
         
 
 

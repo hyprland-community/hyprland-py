@@ -6,9 +6,10 @@ class BindFlag:
     press = -5
 
 class Bind:
-    def __init__(self,key:list, f, flag:int=-5) -> None:
+    def __init__(self,key:list, f,args:list = [], flag:int=-5) -> None:
         self.key = key
         self.f = f
+        self.args = args
         match flag:
             case -1:
                 self.flag = "l"

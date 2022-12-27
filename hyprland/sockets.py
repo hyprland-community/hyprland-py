@@ -71,7 +71,7 @@ class BindListener:
             data = data[5:].strip()
             for bind in self.config._binds:
                 if ".".join(bind.key) == data:
-                    await bind.f()
+                    await bind.f(*bind.args)
                     writer.write(bytes('ok', 'utf-8'))
                     await writer.drain()
                     return writer.close()
