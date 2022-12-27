@@ -60,7 +60,7 @@ class BindListener:
         if isinstance(bind.f,str):
             cmd = f"keyword bind \"{','.join(bind.key) },{bind.f}\""
         else:
-            cmd = f"keyword bind \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
+            cmd = f"keyword bind{bind.flag} \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
         await async_hyprctl(cmd)
 
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
