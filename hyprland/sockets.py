@@ -57,7 +57,7 @@ class BindListener:
 
     async def send_bind(self,bind:'Bind'):
         cmd = f"keyword bind \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
-        await async_hyprctl(f'{cmd}')
+        await async_hyprctl(cmd)
 
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         data = await reader.read(1024)
