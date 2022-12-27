@@ -18,6 +18,15 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 
 # Install
 
+### git
+
+from git
+```py
+pip install git+https://github.com/hyprland-community/hyprland-py
+```
+
+### release
+
 from [pypi](https://pypi.org/project/hyprland.py/0.1/)
 ```py
 pip install hyprland.py
