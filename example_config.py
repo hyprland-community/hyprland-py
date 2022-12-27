@@ -6,17 +6,18 @@ class Config(hyprland.Events):
         super().__init__()
 
     async def callback(self):
-        print("keybind pressed")
+        await hyprland.Dispatch.exec("kitty") # open kitty term
     
     async def on_connect(self):
-        print("Connected to the server!")
-        self.c.general.border_size = 10
-        await self.c.decoration.set_rounding(10)
+        print("Connected to hyprland")
 
-        await self.c.add_bind(
+        self.c.general.border_size = 10 # sync config
+        await self.c.decoration.set_rounding(10) # async config
+
+        await self.c.add_bind( # async bind
             hyprland.Bind(
-                ["SUPER", "a"],
-                self.callback,
+                ["SUPER", "b"],
+                self.callback, # function to run when bind is triggered
                 hyprland.BindFlag.press
             )
         )

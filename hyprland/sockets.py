@@ -32,8 +32,7 @@ async def async_hyprctl(cmd:str):
     p = await asyncio.create_subprocess_shell(f'hyprctl {cmd}', stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     await p.wait()
     resp = (await p.stdout.read()).strip()
-    if resp != b'ok':
-        raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
+    return resp
         
 
 class keyword:    
@@ -57,14 +56,14 @@ class BindListener:
         self.config = config
 
     async def send_bind(self,bind:'Bind'):
-        cmd = f"keyword bind \"{','.join(bind.key) },exec,echo {'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
+        cmd = f"keyword bind \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
         await async_hyprctl(f'{cmd}')
 
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         data = await reader.read(1024)
         data = data.decode('utf-8')
         print(data)
-        if data.startswith('bind '):
+        if data.startswith('bind.'):
             data = data[5:].strip()
             for bind in self.config._binds:
                 if ".".join(bind.key) == data:

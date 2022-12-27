@@ -7,7 +7,7 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 - [x] async sockets
 - [x] change config options
 - [x] event listeners
-- [ ] keybinds
+- [x] keybinds
 - [ ] windowrules
 - [ ] hyprland info
 - [ ] misc hyprland commands(change workspace, move active window etc...)
