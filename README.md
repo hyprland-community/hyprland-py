@@ -1,32 +1,41 @@
 # Hyprland-py
-An unofficial python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua
+An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua
 
 
 # Todo
 
+- [x] async sockets
 - [x] change config options
 - [x] event listeners
 - [ ] keybinds
 - [ ] windowrules
+- [ ] hyprland info
+- [ ] misc hyprland commands(change workspace, move active window etc...)
+- [ ] build `settings.py` file based on current hl version
+- [ ] docs
+- [ ] widgets??
 
 # Example
 change window border to a random number between 0 and 20 everytime a new window is opened
 ```py
 import hyprland
-import random
 
-
-class e(hyprland.Events):
-
-    def on_connect(self):
+class Config(hyprland.Events):
+    def __init__(self):
         self.c = hyprland.Config()
-
-        self.c.decoration.rounding = 12
-        self.c.general.border_size = 10
+        super().__init__()
     
-    def on_openwindow(self, waddr, wname, wclass, wtitle):
-        self.c.general.border_size = random.randint(0, 20)
+    async def on_connect(self):
+        print("Connected to the server!")
+        self.c.general.border_size = 10
+        await self.c.decoration.set_rounding(10)
 
 
-e().connect()
+    async def on_any(self,*args,**kwargs):
+        print(f"any: {args}")
+    
+
+c = Config()
+
+c.async_connect()
 ```
