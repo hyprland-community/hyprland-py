@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-echo $1 | socat unix-connect:/tmp/hypr-py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO

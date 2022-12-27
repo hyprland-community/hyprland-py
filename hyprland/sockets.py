@@ -80,9 +80,6 @@ class BindListener:
         ( not os.path.exists("/tmp/hypr_py/") ) and os.mkdir("/tmp/hypr_py/")
         ( not os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/") ) and os.mkdir(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/")
         os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock") and os.remove(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
-        with open("/tmp/hypr_py/send_sock","w") as f:
-            f.write("#!/usr/bin/bash\necho $1 | socat unix-connect:/tmp/hypr-py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO")
-        os.chmod("/tmp/hypr_py/send_sock",0o777)
         server = await asyncio.start_unix_server(self.handle_bind, f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
         async with server:
             await server.serve_forever()

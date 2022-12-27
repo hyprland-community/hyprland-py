@@ -16,6 +16,13 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 - [ ] docs
 - [ ] widgets??
 
+# Install
+
+from [pypi](https://pypi.org/project/hyprland.py/0.1/)
+```py
+pip install hyprland.py
+```
+
 # Example
 change window border to a random number between 0 and 20 everytime a new window is opened
 ```py
