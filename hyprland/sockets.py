@@ -23,6 +23,7 @@ async def async_command_send(cmd:str):
     writer.write(cmd.encode())
     await writer.drain()
     resp = await reader.read(100)
+    print(resp)
     if resp != b'ok':
         raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
     writer.close()
@@ -56,7 +57,10 @@ class BindListener:
         self.config = config
 
     async def send_bind(self,bind:'Bind'):
-        cmd = f"keyword bind \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
+        if isinstance(bind.f,str):
+            cmd = f"keyword bind \"{','.join(bind.key) },{bind.f}\""
+        else:
+            cmd = f"keyword bind \"{','.join(bind.key) },exec,echo bind.{'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
         await async_hyprctl(cmd)
 
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):

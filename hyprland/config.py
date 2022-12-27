@@ -16,7 +16,6 @@ class Config(settings.Defaults):
         t.start()
     
     async def add_bind(self, bind):
-        print("adding bind")
         await self.bind_listener.send_bind(bind)
         self._binds.append(bind)
         

@@ -11,6 +11,7 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 - [ ] windowrules
 - [ ] hyprland info
 - [ ] misc hyprland commands(change workspace, move active window etc...)
+- [ ] a nice way to handle colors
 - [ ] build `settings.py` file based on current hl version
 - [ ] get config values from the current hyprland config instead of using default values
 - [ ] docs
