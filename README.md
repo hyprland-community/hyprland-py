@@ -10,7 +10,7 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 - [x] keybinds
 - [ ] windowrules
 - [ ] hyprland info
-- [ ] misc hyprland commands(change workspace, move active window etc...)
+- [x] misc hyprland commands(change workspace, move active window etc...)*(dispatchers)*
 - [ ] a nice way to handle colors
 - [ ] build `settings.py` file based on current hl version
 - [ ] get config values from the current hyprland config instead of using default values
@@ -45,12 +45,15 @@ class Config(hyprland.Events):
         super().__init__()
 
     async def terminal(self):
-        hyprland.Dispatch.exec("kitty --single-instance")
+        await hyprland.Dispatch.exec("kitty --single-instance")
     
     async def on_connect(self):
         print("Connected to hyprland")
         
         await self.c.add_binds([
+            # general binds
+            Bind(["SUPER","m"],hyprland.Dispatch.exit),
+
             # mouse binds
             Bind(["SUPER","mouse:272"],"movewindow",BindFlag.mouse),
             Bind(["SUPER","mouse:273"],"resizewindow",BindFlag.mouse),

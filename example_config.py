@@ -7,12 +7,15 @@ class Config(hyprland.Events):
         super().__init__()
 
     async def terminal(self):
-        hyprland.Dispatch.exec("kitty --single-instance")
+        await hyprland.Dispatch.exec("kitty --single-instance")
     
     async def on_connect(self):
         print("Connected to hyprland")
         
         await self.c.add_binds([
+            # general binds
+            Bind(["SUPER","m"],hyprland.Dispatch.exit),
+
             # mouse binds
             Bind(["SUPER","mouse:272"],"movewindow",BindFlag.mouse),
             Bind(["SUPER","mouse:273"],"resizewindow",BindFlag.mouse),
