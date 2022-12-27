@@ -12,11 +12,8 @@ class Events:
     
     def async_connect(self):
         async def _async_handler(self):
-            print("async handler")
             self.listener = EventListener()
-            print("async handler2")
             async for dat in self.listener.async_start():
-                print("async handler3")
                 dat = dat.strip().split(">>")
                 await self.async_dispatch(dat[0], dat[1] if len(dat) > 1 else None)
         asyncio.run(_async_handler(self))

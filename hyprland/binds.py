@@ -1,11 +1,24 @@
 class BindFlag:
-    locked = 0
-    release = 1
-    repeat = 2
-    mouse = 3
+    locked = -1
+    release = -2
+    repeat = -3
+    mouse = -4
+    press = -5
 
 class Bind:
-    def __init__(self, label:str , key:dict, f, mode:int) -> None:
+    def __init__(self,key:list, f, flag:int=-5) -> None:
         self.key = key
         self.f = f
-        self.mode = mode
+        match flag:
+            case -1:
+                self.flag = "l"
+            case -2:
+                self.flag = "r"
+            case -3:
+                self.flag = "e"
+            case -4:
+                self.flag = "m"
+            case -5:
+                self.flag = ""
+            case _:
+                raise Exception(f"hyprland: invalid flag: {flag}")

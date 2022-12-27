@@ -7,30 +7,48 @@ if TYPE_CHECKING:
     from .binds import Bind
     from .config import Config
 
+
+def command_send(cmd:str):
+    print(cmd)
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+        sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+        sock.send(cmd.encode())
+        resp = sock.recv(100)
+        if resp != b"ok":
+            return Exception(f"Hyprland Error: {cmd} : {resp}")
+
+async def async_command_send(cmd:str):
+    print(cmd)
+    reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+    writer.write(cmd.encode())
+    await writer.drain()
+    resp = await reader.read(100)
+    if resp != b'ok':
+        raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
+    writer.close()
+
+async def async_hyprctl(cmd:str):
+    print(cmd)
+    p = await asyncio.create_subprocess_shell(f'hyprctl {cmd}', stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    await p.wait()
+    resp = (await p.stdout.read()).strip()
+    if resp != b'ok':
+        raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
+        
+
 class keyword:    
 
     async def send_cmd (self,attr,value):
         if isinstance(value, bool):
             value = str(value).lower()
-        reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
-        writer.write(f'keyword {self.__class__.__name__.lower()}:{attr.replace("__",".")} {str(value)}'.encode())
-        await writer.drain()
-        resp = await reader.read(100)
-        if resp != b'ok':
-            raise Exception(f'hyprland: error while setting attribute: {resp}')
-        writer.close()
+        await async_command_send(f'keyword {self.__class__.__name__.lower()}:{attr.replace("__",".")} {str(value)}')
 
     def __setattr__(self, attr, value,ignore=False):
         if not ignore:
             if isinstance(value, bool):
                 value = str(value).lower()
             print(f'keyword {self.__class__.__name__} {attr} {value}')
-            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-                sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
-                sock.send(f'keyword {self.__class__.__name__.lower()}:{attr.replace("__",".")} {value}'.encode())
-                resp = sock.recv(100)
-                if resp != b"ok":
-                    return Exception(f"Hyprland Error: {resp}")
+            command_send(f'keyword {self.__class__.__name__.lower()}:{attr.replace("__",".")} {value}')
         super().__setattr__(attr, value)
 
 class BindListener:
@@ -38,15 +56,19 @@ class BindListener:
     def __init__(self,config:'Config'):
         self.config = config
 
+    async def send_bind(self,bind:'Bind'):
+        cmd = f"keyword bind \"{','.join(bind.key) },exec,echo {'.'.join(bind.key)} | socat unix-connect:/tmp/hypr_py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO\""
+        await async_hyprctl(f'{cmd}')
+
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         data = await reader.read(1024)
         data = data.decode('utf-8')
         print(data)
         if data.startswith('bind '):
-            data = data[5:]
+            data = data[5:].strip()
             for bind in self.config._binds:
-                if str(bind.key) == data:
-                    bind.f()
+                if ".".join(bind.key) == data:
+                    await bind.f()
                     writer.write(bytes('ok', 'utf-8'))
                     await writer.drain()
                     return writer.close()
@@ -55,10 +77,14 @@ class BindListener:
         return writer.close()
     
     async def start(self):
-        ( not os.path.exists("/tmp/hypr-py/") ) and os.mkdir("/tmp/hypr-py/")
-        ( not os.path.exists(f"/tmp/hypr-py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/") ) and os.mkdir(f"/tmp/hypr-py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/")
-        os.path.exists(f"/tmp/hypr-py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock") and os.remove(f"/tmp/hypr-py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
-        server = await asyncio.start_unix_server(self.handle_bind, f"/tmp/hypr-py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+        print("Starting bind listener...")
+        ( not os.path.exists("/tmp/hypr_py/") ) and os.mkdir("/tmp/hypr_py/")
+        ( not os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/") ) and os.mkdir(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/")
+        os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock") and os.remove(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+        with open("/tmp/hypr_py/send_sock","w") as f:
+            f.write("#!/usr/bin/bash\necho $1 | socat unix-connect:/tmp/hypr-py/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock STDIO")
+        os.chmod("/tmp/hypr_py/send_sock",0o777)
+        server = await asyncio.start_unix_server(self.handle_bind, f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
         async with server:
             await server.serve_forever()
         
@@ -83,10 +109,3 @@ class EventListener:
             if not data:
                 break
             yield data.decode('utf-8')
-
-
-
-def set_bind(bind:'Bind'):
-    mod = bind.key.keys()[0]
-    key = bind.key[mod]
-    label = bind.label
