@@ -19,6 +19,7 @@ class Config(settings.Defaults):
         print("adding bind")
         await self.bind_listener.send_bind(bind)
         self._binds.append(bind)
+        
 
 
 
