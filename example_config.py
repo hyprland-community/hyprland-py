@@ -17,8 +17,8 @@ class Config(hyprland.Events):
             Bind(["SUPER","m"],hyprland.Dispatch.exit),
 
             # mouse binds
-            Bind(["SUPER","mouse:272"],"movewindow",BindFlag.mouse),
-            Bind(["SUPER","mouse:273"],"resizewindow",BindFlag.mouse),
+            Bind(["SUPER","mouse:272"],"movewindow",flag=BindFlag.mouse),
+            Bind(["SUPER","mouse:273"],"resizewindow",flag=BindFlag.mouse),
 
             # keyboard binds
             Bind(["SUPER","return"],self.terminal),
