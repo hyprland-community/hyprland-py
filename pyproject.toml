@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyprland"
+version = "0.1"
+authors = [
+  { name="flicko", email="flickerdroid211@gmail.com" },
+]
+description = "An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/hyprland-community/hyprland-py"
+"Bug Tracker" = "https://github.com/hyprland-community/hyprland-py/issues"
