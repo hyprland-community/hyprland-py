@@ -2,8 +2,13 @@ import socket
 import os
 import asyncio
 from .sockets import EventListener
+from .dispatch import Dispatch
 
 class Events:
+
+    async def reload(self):
+        await Dispatch.reload_config()
+        self.__init__()
 
     def connect(self):
         for data in self.listener.start():
@@ -12,6 +17,7 @@ class Events:
     
     def async_connect(self):
         async def _async_handler(self):
+            await Dispatch.reload_config()
             self.listener = EventListener()
             async for dat in self.listener.async_start():
                 dat = dat.strip().split(">>")

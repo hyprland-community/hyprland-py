@@ -103,3 +103,6 @@ class Dispatch:
     
     async def toggles_pecial_workspace(sw=None):
         await async_command_send(f'/dispatch togglespecialworkspace {sw if sw else ""}')
+
+    async def reload_config():
+        async_command_send('/reload')

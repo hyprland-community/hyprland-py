@@ -2,7 +2,9 @@ from . import settings
 # from .binds import Bind, BindFlag
 from .sockets import BindListener
 from threading import Thread
+from .dispatch import Dispatch
 import asyncio
+
 
 class Config(settings.Defaults):
     def __init__(self):
@@ -22,6 +24,14 @@ class Config(settings.Defaults):
     async def add_binds(self, binds):
         for bind in binds:
             await self.add_bind(bind)
+    
+    async def reload(self):
+        await Dispatch.reload_config()
+        self.__init__()
+
+
+
+        
         
 
 
