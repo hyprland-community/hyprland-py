@@ -76,7 +76,7 @@ class Dispatch:
     
     async def toggle_opaque():
         await async_command_send('/dispatch toggleopaque')
-    
+        ### 
     async def move_cursor_to_corner(c):
         await async_command_send(f'/dispatch movecursortocorner {c}')
     
@@ -104,5 +104,17 @@ class Dispatch:
     async def toggles_pecial_workspace(sw=None):
         await async_command_send(f'/dispatch togglespecialworkspace {sw if sw else ""}')
 
+    ### end of the actual dispatch commands
+    ### and henceforth are the commands that are not 
+
     async def reload_config():
-        await async_command_send('/reload')
+        await async_command_send('reload')
+    
+    async def kill_mode():
+        await async_command_send('kill')
+    
+    async def cursor_theme(theme,size):
+        await async_command_send(f'cursor {theme} {size}')
+    
+    async def switch_xkb_layout(device,cmd):
+        await async_command_send(f'switchxkblayout {device} {cmd}')
