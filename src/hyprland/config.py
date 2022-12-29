@@ -29,9 +29,12 @@ class Config(settings.Defaults):
                 val = await Info.get_option(f'{section[0]}:{option}',type(value))
                 getattr(config,section[0]).__setattr__(option,val,ignore=True)
         return config
+
+    def get_sections(self):
+        sections = inspect.getmembers(settings.Defaults(), lambda a:not inspect.isroutine(a))
+        sections = [a[0] for a in sections if not(a[0].startswith('__') and a[0].endswith('__'))]
+        return sections
         
-
-
     def start_bind_listener(self):
         t = Thread(target=asyncio.run,args = [self.bind_listener.start()])
         t.start()
