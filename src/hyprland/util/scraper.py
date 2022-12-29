@@ -25,9 +25,11 @@ def get_dat():
                             })
     return dat
 
-def parse_val(s,t):
+def parse_val(s,t,quote=True):
     if s == '[EMPTY]':
-        return None
+        return ''
+    if s == '[[EMPTY]]':
+        return ''
     elif s in ['true','yes','on']:
         return True
     elif s in ['false','no','off']:
@@ -44,7 +46,7 @@ def parse_val(s,t):
                 return int(s, 16)
             case _:
                 print('Unknown type: ' + t)
-                return f'\'{s}\''
+                return f'\'{s}\'' if quote else s
 
 
 if __name__ == '__main__':

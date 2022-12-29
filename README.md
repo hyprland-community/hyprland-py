@@ -13,7 +13,8 @@ An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work 
 - [x] misc hyprland commands(change workspace, move active window etc...)*(dispatchers)*
 - [ ] a nice way to handle colors
 - [ ] build `settings.py` file based on current hl version
-- [ ] get config values from the current hyprland config instead of using default values
+- [x] get config values from the current hyprland config instead of using default values
+> getting binds still dont work
 - [ ] docs
 - [ ] widgets??
 

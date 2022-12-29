@@ -17,22 +17,25 @@ def command_send(cmd:str):
         if resp != b"ok":
             return Exception(f"Hyprland Error: {cmd} : {resp}")
 
-async def async_command_send(cmd:str):
+async def async_command_send(cmd:str, ignore_ok:bool=False):
     print(cmd)
     reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
     writer.write(cmd.encode())
     await writer.drain()
     resp = await reader.read(100)
-    print(resp)
-    if resp != b'ok':
-        raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
     writer.close()
+    print(resp)
+    if not ignore_ok and resp != b'ok':
+        raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
+    else:
+        return resp
+    
 
 async def async_hyprctl(cmd:str):
     print(cmd)
     p = await asyncio.create_subprocess_shell(f'hyprctl {cmd}', stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     await p.wait()
-    resp = (await p.stdout.read()).strip()
+    resp = (await p.stdout.read()).decode('utf-8').strip()
     return resp
         
 
