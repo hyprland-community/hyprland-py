@@ -30,7 +30,7 @@ class Config(settings.Defaults):
                 getattr(config,section[0]).__setattr__(option,val,ignore=True)
         return config
 
-    def get_sections(self):
+    def get_sections(self=None):
         sections = inspect.getmembers(settings.Defaults(), lambda a:not inspect.isroutine(a))
         sections = [a[0] for a in sections if not(a[0].startswith('__') and a[0].endswith('__'))]
         return sections
