@@ -45,8 +45,10 @@ def parse_val(s,t,quote=True):
             case 'color':
                 return int(s, 16)
             case _:
-                print('Unknown type: ' + t)
-                return f'\'{s}\'' if quote else s
+                if quote:
+                    print('Unknown type: ' + t)
+                    return f'\'{s}\''
+                return s
 
 
 if __name__ == '__main__':
