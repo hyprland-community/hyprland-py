@@ -30,7 +30,7 @@ class Info:
         return json.loads(await async_hyprctl('splash'))
 
     async def get_option(opt,prefered_type=None):
-        resp = await async_hyprctl(f'getoption {opt} -j')
+        resp = await async_hyprctl(f"getoption {opt.replace('__','.')} -j")
         if resp.strip()[0] == '{':
             dat:dict = json.loads(resp)
             import sys
