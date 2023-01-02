@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 
 def command_send(cmd:str):
-    print(cmd)
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
         sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
         sock.send(cmd.encode())
@@ -18,13 +17,11 @@ def command_send(cmd:str):
             return Exception(f"Hyprland Error: {cmd} : {resp}")
 
 async def async_command_send(cmd:str, ignore_ok:bool=False):
-    print(cmd)
     reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
     writer.write(cmd.encode())
     await writer.drain()
     resp = await reader.read(100)
     writer.close()
-    print(resp)
     if not ignore_ok and resp != b'ok':
         raise Exception(f'hyprland: {cmd.encode()!r} : {resp}')
     else:
@@ -32,7 +29,6 @@ async def async_command_send(cmd:str, ignore_ok:bool=False):
     
 
 async def async_hyprctl(cmd:str):
-    print(cmd)
     p = await asyncio.create_subprocess_shell(f'hyprctl {cmd}', stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     await p.wait()
     resp = (await p.stdout.read()).decode('utf-8').strip()
@@ -50,7 +46,6 @@ class keyword:
         if not ignore:
             if isinstance(value, bool):
                 value = str(value).lower()
-            print(f'keyword {self.__class__.__name__} {attr} {value}')
             command_send(f'keyword {self.__class__.__name__.lower()}:{attr.replace("__",".")} {value}')
         super().__setattr__(attr, value)
 
@@ -69,7 +64,6 @@ class BindListener:
     async def handle_bind(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         data = await reader.read(1024)
         data = data.decode('utf-8')
-        print(data)
         if data.startswith('bind.'):
             data = data[5:].strip()
             for bind in self.config._binds:
@@ -83,7 +77,6 @@ class BindListener:
         return writer.close()
     
     async def start(self):
-        print("Starting bind listener...")
         ( not os.path.exists("/tmp/hypr_py/") ) and os.mkdir("/tmp/hypr_py/")
         ( not os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/") ) and os.mkdir(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/")
         os.path.exists(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock") and os.remove(f"/tmp/hypr_py/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
