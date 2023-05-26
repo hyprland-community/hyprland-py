@@ -19,9 +19,12 @@ class Events:
         async def _async_handler(self):
             await Dispatch.reload_config()
             self.listener = EventListener()
-            async for dat in self.listener.async_start():
-                dat = dat.strip().split(">>")
-                await self.async_dispatch(dat[0], dat[1] if len(dat) > 1 else None)
+            async for chunk in self.listener.async_start():
+                for event in chunk.strip().split("\n"):
+                    split_event = event.split(">>")
+                    name = split_event[0]
+                    value = split_event[1] if len(split_event) > 1 else None
+                    await self.async_dispatch(name, value)
         asyncio.run(_async_handler(self))
     
     def dispatch(self,event,raw=None):
