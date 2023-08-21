@@ -100,8 +100,13 @@ class EventListener:
     async def async_start(self):
         reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
         yield "connect"
+
+        buffer = b""
         while True:
-            data = await reader.read(1024)
-            if not data:
+            new_data = await reader.read(1024)
+            if not new_data:
                 break
-            yield data.decode('utf-8')
+            buffer += new_data
+            while b"\n" in buffer:
+                data, buffer = buffer.split(b"\n", 1)
+                yield data.decode("utf-8")
