@@ -5,30 +5,39 @@ import json
 
 
 class Info:
+    @staticmethod
     async def version():
         return json.loads(await async_hyprctl('version -j'))
-    
+
+    @staticmethod
     async def monitors():
         return json.loads(await async_hyprctl('monitors -j'))
-    
+
+    @staticmethod
     async def workspaces():
         return json.loads(await async_hyprctl('workspaces -j'))
-    
+
+    @staticmethod
     async def clients():
         return json.loads(await async_hyprctl('clients -j'))
-    
+
+    @staticmethod
     async def devices():
         return json.loads(await async_hyprctl('devices -j'))
-    
+
+    @staticmethod
     async def active_window():
         return json.loads(await async_hyprctl('activewindow -j'))
-    
+
+    @staticmethod
     async def layers():
         return json.loads(await async_hyprctl('layers -j'))
-    
+
+    @staticmethod
     async def splash():
         return json.loads(await async_hyprctl('splash'))
 
+    @staticmethod
     async def get_option(opt,prefered_type=None):
         resp = await async_hyprctl(f"getoption {opt.replace('__','.')} -j")
         if resp.strip()[0] == '{':
@@ -51,11 +60,7 @@ class Info:
                 return dat[list(dat.keys())[0]]
             return dat
         return resp
-    
+
+    @staticmethod
     async def cursor_pos():
         return json.loads(await async_hyprctl('cursorpos -j'))
-    
-
-    
-
-    
