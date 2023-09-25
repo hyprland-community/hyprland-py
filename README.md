@@ -35,7 +35,6 @@ pip install hyprland
 ```
 
 # Example
-change window border to a random number between 0 and 20 everytime a new window is opened
 ```py
 import hyprland
 from hyprland import Bind, BindFlag

@@ -1,8 +1,30 @@
 from .sockets import async_hyprctl
-from .util.scraper import parse_val
 import json
 
-
+def parse_val(s,t,quote=True):
+    if s == '[EMPTY]':
+        return ''
+    if s == '[[EMPTY]]':
+        return ''
+    elif s in ['true','yes','on']:
+        return True
+    elif s in ['false','no','off']:
+        return False
+    elif s == 'unset':
+        return None
+    else:
+        match t:
+            case 'int':
+                return int(s)
+            case 'float':
+                return float(s)
+            case 'color':
+                return int(s, 16)
+            case _:
+                if quote:
+                    print('Unknown type: ' + t)
+                    return f'\'{s}\''
+                return s
 
 class Info:
     @staticmethod
