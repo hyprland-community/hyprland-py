@@ -29,7 +29,7 @@ pip install git+https://github.com/hyprland-community/hyprland-py
 
 ### release
 
-from [pypi](https://pypi.org/project/hyprland/0.1/)
+from [pypi](https://pypi.org/project/hyprland)
 ```py
 pip install hyprland
 ```
