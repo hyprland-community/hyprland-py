@@ -6,6 +6,21 @@ from typing import Callable, overload
 
 from .dispatch import Dispatcher, Exec
 from .socket import execute
+from .info import Bind
+from enum import StrEnum
+
+
+# fmt: off
+# <https://github.com/swaywm/wlroots/blob/0855cdacb2eeeff35849e2e9c4db0aa996d78d10/include/wlr/types/wlr_keyboard.h#L28>
+WLR_MODIFIER_SHIFT = 1 << 0
+WLR_MODIFIER_CAPS  = 1 << 1
+WLR_MODIFIER_CTRL  = 1 << 2
+WLR_MODIFIER_ALT   = 1 << 3
+WLR_MODIFIER_MOD2  = 1 << 4
+WLR_MODIFIER_MOD3  = 1 << 5
+WLR_MODIFIER_LOGO  = 1 << 6
+WLR_MODIFIER_MOD5  = 1 << 7
+# fmt: on
 
 
 class Key(str):
@@ -14,7 +29,45 @@ class Key(str):
    ...
 
 
-class Mod(str):
+class Mod(StrEnum):
+   EMPTY = ""
+   "For keybindings without any modifiers. Useful in submaps."
+   SUPER = "SUPER"
+   SHIFT = "SHIFT"
+   CAPS = "CAPS"
+   CTRL = "CTRL"
+   ALT = "ALT"
+   MOD2 = "MOD2"
+   MOD3 = "MOD3"
+   LOGO = "LOGO"
+   "Same as Mod.SUPER"
+   WIN = "WIN"
+   "Same as Mod.SUPER"
+   MOD4 = "MOD4"
+   "Same as Mod.SUPER"
+   MOD5 = "MOD5"
+
+   @classmethod
+   def from_modmask(cls, modmask: int):
+      mods: list[Mod] = []
+      if modmask & WLR_MODIFIER_SHIFT:
+         mods.append(Mod.SHIFT)
+      if modmask & WLR_MODIFIER_CAPS:
+         mods.append(Mod.CAPS)
+      if modmask & WLR_MODIFIER_CTRL:
+         mods.append(Mod.CTRL)
+      if modmask & WLR_MODIFIER_ALT:
+         mods.append(Mod.ALT)
+      if modmask & WLR_MODIFIER_MOD2:
+         mods.append(Mod.MOD2)
+      if modmask & WLR_MODIFIER_MOD3:
+         mods.append(Mod.MOD3)
+      if modmask & WLR_MODIFIER_LOGO:
+         mods.append(Mod.SUPER)
+      if modmask & WLR_MODIFIER_MOD5:
+         mods.append(Mod.MOD5)
+      return mods
+
    @overload
    def __add__(self, other: Key) -> Keybind:
       ...
@@ -27,15 +80,6 @@ class Mod(str):
       return KeybindBuilder([self]) + other
 
 
-EMPTY = Mod("")
-"For keybindings without any modifiers. Useful in submaps."
-SUPER = Mod("SUPER")
-"The Windows key."
-SHIFT = Mod("SHIFT")
-ALT = Mod("ALT")
-CTRL = Mod("CTRL")
-
-
 @dataclass
 class Keybind:
    mods: list[Mod]
@@ -46,6 +90,18 @@ class Keybind:
    _non_consuming: bool = False
    _mouse: bool = False  # FIXME: Implement mouse dispatchers.
    _transparent: bool = False
+
+   @classmethod
+   def from_bind(cls, bind: Bind):
+      return cls(
+         mods=Mod.from_modmask(bind.modmask),
+         key=Key(bind.key),
+         _locked=bind.locked,
+         _release=bind.release,
+         _repeat=bind.repeat,
+         _non_consuming=bind.non_consuming,
+         _mouse=bind.mouse,
+      )
 
    def _flags(self):
       f = b""
@@ -142,8 +198,3 @@ class KeybindBuilder:
 
 def submap(keybind: Keybind):
    return keybind.submap
-
-
-@submap(SUPER + Key("E"))
-def exec_submap():
-   (EMPTY + Key("F")).repeat().bind(Exec("firefox"))

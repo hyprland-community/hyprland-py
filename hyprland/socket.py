@@ -3,6 +3,7 @@ from __future__ import annotations
 import socket
 from os import getenv
 from pathlib import Path
+from typing import Iterable
 
 from .errors import HyprlandError
 
@@ -33,9 +34,11 @@ def query(command: bytes):
    return sock.recv(BUFFER_SIZE)
 
 
-def execute(command: bytes):
+def execute(command: bytes | Iterable[bytes]):
    """Executes a hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
    sock = _socket()
+   if not isinstance(command, bytes):
+      command = b";".join(b"/" + i for i in command)
    sock.send(b"/" + command)
    response = sock.recv(BUFFER_SIZE)
    if response != b"ok":
