@@ -184,6 +184,7 @@ def devices():
 
 
 def binds():
+   """See `binds.Keybind.from_bind()` to get key combination information."""
    return json.decode(query(b"binds"), type=list[Bind])
 
 

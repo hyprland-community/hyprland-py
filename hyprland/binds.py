@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Callable, overload
 
-from .dispatch import Dispatcher, Exec
+from .dispatch import Dispatcher
 from .socket import execute
 from .info import Bind
 from enum import StrEnum
@@ -47,6 +47,7 @@ class Mod(StrEnum):
    "Same as Mod.SUPER"
    MOD5 = "MOD5"
 
+   # <https://github.com/hyprwm/Hyprland/blob/ffacd2efd1ca7fdf364a519c9d8d8644da28412b/src/managers/KeybindManager.cpp#L115>
    @classmethod
    def from_modmask(cls, modmask: int):
       mods: list[Mod] = []
@@ -93,6 +94,7 @@ class Keybind:
 
    @classmethod
    def from_bind(cls, bind: Bind):
+      """Convert a `info.Bind` returned by `info.binds()` into a `Keybind`. Discards dispatcher information."""
       return cls(
          mods=Mod.from_modmask(bind.modmask),
          key=Key(bind.key),
