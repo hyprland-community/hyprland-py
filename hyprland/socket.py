@@ -42,11 +42,28 @@ def query(command: bytes):
    return sock.recv(BUFFER_SIZE)
 
 
+async def query_async(command: bytes):
+   """Executes a hyprctl command using the IPC socket with the json flag and returns the response."""
+   reader, writer = await asyncio.open_unix_connection(HYPRLAND_SOCKET_ADDRESS)
+   writer.write(b"j/" + command)
+   # FIXME: Raise appropriate exception on error.
+   return await reader.read()
+
+
 def execute(command: Command | bytes):
    """Executes a hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
    sock = _socket()
    sock.send(b"/" + command.to_command() if isinstance(command, Command) else command)
    response = sock.recv(BUFFER_SIZE)
+   if response != b"ok":
+      raise HyprlandError(command, response)
+
+
+async def execute_async(command: Command | bytes):
+   """Executes a hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
+   reader, writer = await asyncio.open_unix_connection(HYPRLAND_SOCKET_ADDRESS)
+   writer.write(b"/" + command.to_command() if isinstance(command, Command) else command)
+   response = await reader.read()
    if response != b"ok":
       raise HyprlandError(command, response)
 
@@ -69,6 +86,28 @@ def execute_batch(commands: Iterable[Command | bytes] | Command | bytes, *args: 
    # FIXME: The batch flag is wrong/ does not work.
    sock.send(b"b/" + b";".join(i.to_command() if isinstance(i, Command) else i for i in commands))
    response = sock.recv(BUFFER_SIZE)
+   if response != b"ok":
+      raise HyprlandError(commands, response)
+
+
+@overload
+async def execute_batch_async(commands: Iterable[Command | bytes]) -> None:
+   ...
+
+
+@overload
+async def execute_batch_async(*commands: Command | bytes) -> None:
+   ...
+
+
+async def execute_batch_async(commands: Iterable[Command | bytes] | Command | bytes, *args: Command | bytes):
+   """Executes a batch of hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
+   if isinstance(commands, (bytes, Command)):
+      commands = chain([commands], args)
+   reader, writer = await asyncio.open_unix_connection(HYPRLAND_SOCKET_ADDRESS)
+   # FIXME: The batch flag is wrong/ does not work.
+   writer.write(b"b/" + b";".join(i.to_command() if isinstance(i, Command) else i for i in commands))
+   response = await reader.read()
    if response != b"ok":
       raise HyprlandError(commands, response)
 

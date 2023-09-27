@@ -3,7 +3,7 @@ from __future__ import annotations
 import msgspec.json as json
 from msgspec import Struct, field
 
-from .socket import execute, query
+from .socket import execute, execute_async, query, query_async
 
 
 class IncompleteWorkspace(Struct):
@@ -224,3 +224,74 @@ def set_cursor_theme(theme: str, size: int):
 
 def switch_xkb_layout(device: str, cmd: str):
    execute(b"switchxkblayout " + device.encode() + b" " + cmd.encode())
+
+
+async def monitors_async():
+   return json.decode(await query_async(b"monitors"), type=list[Monitor])
+
+
+async def workspaces_async():
+   return json.decode(await query_async(b"workspaces"), type=list[Workspace])
+
+
+async def active_workspace_async():
+   return json.decode(await query_async(b"activeworkspace"), type=Workspace)
+
+
+async def clients_async():
+   return json.decode(await query_async(b"clients"), type=list[Client])
+
+
+async def active_window_async():
+   return json.decode(await query_async(b"activewindow"), type=Client)
+
+
+async def layers_async():
+   return json.decode(await query_async(b"layers"), type=dict[str, Layers])
+
+
+async def devices_async():
+   return json.decode(await query_async(b"devices"), type=Devices)
+
+
+async def binds_async():
+   """See `binds.Keybind.from_bind()` to get key combination information."""
+   return json.decode(await query_async(b"binds"), type=list[Bind])
+
+
+async def version_async():
+   return json.decode(await query_async(b"version"), type=Version)
+
+
+async def splash_async():
+   return (await query_async(b"splash")).decode()
+
+
+async def cursor_position_async():
+   return json.decode(await query_async(b"cursorpos"), type=CursorPosition)
+
+
+async def global_shortcuts_async():
+   raise NotImplementedError
+
+
+async def instances_async():
+   return json.decode(await query_async(b"instances"), type=list[Instance])
+
+
+async def reload_async():
+   """Reload configuration"""
+   await execute_async(b"reload")
+
+
+async def kill_async():
+   """Kill Hyprland"""
+   await execute_async(b"kill")
+
+
+async def set_cursor_theme_async(theme: str, size: int):
+   await execute_async(b"cursor " + theme.encode() + b" " + str(size).encode())
+
+
+async def switch_xkb_layout_async(device: str, cmd: str):
+   await execute_async(b"switchxkblayout " + device.encode() + b" " + cmd.encode())
