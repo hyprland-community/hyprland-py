@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import msgspec.json as json
 from msgspec import Struct, field
 
-from .socket import execute, query
+from .socket import Command, query
 
 
 class Option(Struct):
@@ -20,8 +20,13 @@ def get_option(path: str):
    return json.decode(query(f"getoption {path}".encode()), type=Option)
 
 
-def set_option(path: str, value: str):
-   execute(f"keyword {path} {value}".encode())
+@dataclass
+class SetOption(Command):
+   path: str
+   value: str
+
+   def to_command(self):
+      return f"keyword {self.path} {self.value}".encode()
 
 
 @dataclass
@@ -32,8 +37,7 @@ class KeywordBool:
       return get_option(self.path).integer != 0
 
    def set(self, value: bool):
-      set_option(self.path, "1" if value else "0")
-      return self
+      return SetOption(self.path, "1" if value else "0")
 
 
 @dataclass
@@ -44,8 +48,7 @@ class KeywordInt:
       return get_option(self.path).integer
 
    def set(self, value: int):
-      set_option(self.path, str(value))
-      return self
+      return SetOption(self.path, str(value))
 
 
 @dataclass
@@ -56,8 +59,7 @@ class KeywordFloat:
       return get_option(self.path).floating
 
    def set(self, value: float):
-      set_option(self.path, str(value))
-      return self
+      return SetOption(self.path, str(value))
 
 
 @dataclass
@@ -68,8 +70,7 @@ class KeywordVec2:
       return get_option(self.path)
 
    def set(self, x: float, y: float):
-      set_option(self.path, f"{x} {y}")
-      return self
+      return SetOption(self.path, f"{x} {y}")
 
 
 @dataclass
@@ -80,8 +81,7 @@ class KeywordColor:
       return get_option(self.path)
 
    def set(self, color: str):
-      set_option(self.path, color)
-      return self
+      return SetOption(self.path, color)
 
 
 @dataclass
@@ -92,8 +92,7 @@ class KeywordStr:
       return get_option(self.path).string
 
    def set(self, value: str):
-      set_option(self.path, value)
-      return self
+      return SetOption(self.path, value)
 
 
 @dataclass
@@ -104,5 +103,4 @@ class KeywordGradient:
       return get_option(self.path)
 
    def set(self, colors: list[str], angle: int = 0):
-      set_option(self.path, " ".join(colors) + f" {angle}deg")
-      return self
+      return SetOption(self.path, " ".join(colors) + f" {angle}deg")

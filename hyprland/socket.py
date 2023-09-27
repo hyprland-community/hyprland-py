@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import socket
+from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, overload
 
 from .errors import HyprlandError
 
@@ -26,6 +27,11 @@ def _socket():
    return sock
 
 
+class Command:
+   def to_command(self) -> bytes:
+      raise NotImplementedError
+
+
 def query(command: bytes):
    """Executes a hyprctl command using the IPC socket with the json flag and returns the response."""
    sock = _socket()
@@ -34,12 +40,32 @@ def query(command: bytes):
    return sock.recv(BUFFER_SIZE)
 
 
-def execute(command: bytes | Iterable[bytes]):
+def execute(command: Command | bytes):
    """Executes a hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
    sock = _socket()
-   if not isinstance(command, bytes):
-      command = b";".join(b"/" + i for i in command)
-   sock.send(b"/" + command)
+   sock.send(b"/" + command.to_command() if isinstance(command, Command) else command)
    response = sock.recv(BUFFER_SIZE)
    if response != b"ok":
       raise HyprlandError(command, response)
+
+
+@overload
+def execute_batch(commands: Iterable[Command | bytes]) -> None:
+   ...
+
+
+@overload
+def execute_batch(*commands: Command | bytes) -> None:
+   ...
+
+
+def execute_batch(commands: Iterable[Command | bytes] | Command | bytes, *args: Command | bytes):
+   """Executes a batch of hyprctl command using the IPC socket. Raises `HyprlandError` on error."""
+   if isinstance(commands, (bytes, Command)):
+      commands = chain([commands], args)
+   sock = _socket()
+   # FIXME: The batch flag is wrong/ does not work.
+   sock.send(b"b/" + b";".join(i.to_command() if isinstance(i, Command) else i for i in commands))
+   response = sock.recv(BUFFER_SIZE)
+   if response != b"ok":
+      raise HyprlandError(commands, response)

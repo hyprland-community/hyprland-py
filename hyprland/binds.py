@@ -7,7 +7,7 @@ from typing import Callable, overload
 
 from .dispatch import Dispatcher
 from .hyprctl import Bind
-from .socket import execute
+from .socket import Command, execute
 
 # fmt: off
 # <https://github.com/swaywm/wlroots/blob/0855cdacb2eeeff35849e2e9c4db0aa996d78d10/include/wlr/types/wlr_keyboard.h#L28>
@@ -20,6 +20,23 @@ WLR_MODIFIER_MOD3  = 1 << 5
 WLR_MODIFIER_LOGO  = 1 << 6
 WLR_MODIFIER_MOD5  = 1 << 7
 # fmt: on
+
+
+@dataclass
+class Keybinder(Command):
+   keybind: Keybind
+   dispatcher: Dispatcher
+
+   def to_command(self):
+      return self.keybind.to_bind_command(self.dispatcher)
+
+
+@dataclass
+class Keyunbinder(Command):
+   keybind: Keybind
+
+   def to_command(self):
+      return self.keybind.to_unbind_command()
 
 
 class Key(str):
@@ -125,7 +142,7 @@ class Keybind:
          chain(
             (b" ".join(i.encode() for i in self.mods),),
             (self.key.encode(),),
-            dispatcher.to_command() if dispatcher else (),
+            dispatcher.to_command_args() if dispatcher else (),
          )
       )
 
@@ -159,16 +176,17 @@ class Keybind:
       self._transparent = True
       return self
 
-   def bind(
-      self,
-      dispatcher: Dispatcher,
-   ):
-      execute(b"keyword bind" + self._flags() + b" " + self._bindstr(dispatcher))
-      return self
+   def bind(self, dispatcher: Dispatcher):
+      return Keybinder(self, dispatcher)
+
+   def to_bind_command(self, dispatcher: Dispatcher):
+      return b"keyword bind" + self._flags() + b" " + self._bindstr(dispatcher)
 
    def unbind(self):
-      execute(b"keyword unbind " + self._bindstr())
-      return self
+      return Keyunbinder(self)
+
+   def to_unbind_command(self):
+      return b"keyword unbind " + self._bindstr()
 
    def submap(self, func: Callable[[], None]):
       execute(b"keyword bind " + self._bindstr() + b",submap," + func.__name__.encode())

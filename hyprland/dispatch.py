@@ -3,11 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from .socket import execute
+from .socket import Command
+
+
+@dataclass
+class Dispatcher(Command):
+   def to_command_args(self) -> tuple[bytes, ...]:
+      raise NotImplementedError
+
+   def to_command(self):
+      return b"dispatch " + b" ".join(self.to_command_args())
 
 
 class CommandEnum(StrEnum):
-   def to_command(self):
+   def to_command_args(self):
       return self.value.encode()
 
 
@@ -36,7 +45,7 @@ class WindowAddress:
 
    _: str
 
-   def to_command(self):
+   def to_command_args(self):
       return b"address:" + self._.encode()
 
 
@@ -46,7 +55,7 @@ class WindowClassPattern:
 
    _: str
 
-   def to_command(self):
+   def to_command_args(self):
       return self._.encode()
 
 
@@ -56,7 +65,7 @@ class WindowTitlePattern:
 
    _: str
 
-   def to_command(self):
+   def to_command_args(self):
       return b"title:" + self._.encode()
 
 
@@ -66,7 +75,7 @@ class WindowPID:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       return b"pid:" + str(self._).encode()
 
 
@@ -79,7 +88,7 @@ class WorkspaceID:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       return str(self._).encode()
 
 
@@ -89,7 +98,7 @@ class WorkspaceRelative:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       if 0 < self._:
          return b"+" + str(self._).encode()
       elif self._ < 0:
@@ -103,7 +112,7 @@ class WorkspaceOnMonitorRelative:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       if 0 < self._:
          return b"m+" + str(self._).encode()
       elif self._ < 0:
@@ -117,7 +126,7 @@ class WorkspaceOnMonitorRelativeIncludingEmpty:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       if 0 < self._:
          return b"r+" + str(self._).encode()
       elif self._ < 0:
@@ -131,7 +140,7 @@ class WorkspaceOpenRelative:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       if 0 < self._:
          return b"e+" + str(self._).encode()
       elif self._ < 0:
@@ -141,13 +150,13 @@ class WorkspaceOpenRelative:
 
 @dataclass
 class WorkspacePrevious:
-   def to_command(self):
+   def to_command_args(self):
       return b"previous"
 
 
 @dataclass
 class WorkspaceFirstEmptyAvailable:
-   def to_command(self):
+   def to_command_args(self):
       return b"empty"
 
 
@@ -155,7 +164,7 @@ class WorkspaceFirstEmptyAvailable:
 class WorkspaceSpecial:
    _: str | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self._:
          return b"special:" + self._.encode()
       else:
@@ -180,13 +189,13 @@ class MonitorID:
 
    _: str
 
-   def to_command(self):
+   def to_command_args(self):
       return self._.encode()
 
 
 @dataclass
 class MonitorCurrent:
-   def to_command(self):
+   def to_command_args(self):
       return b"current"
 
 
@@ -196,7 +205,7 @@ class MonitorRelative:
 
    _: int
 
-   def to_command(self):
+   def to_command_args(self):
       if 0 < self._:
          return b"+" + str(self._).encode()
       elif self._ < 0:
@@ -222,27 +231,18 @@ class ResizeParams:
       self.y = y
       self.exact = exact
 
-   def to_command(self):
-      return (b"exact" if self.exact else b"") + self.x.to_command() + b" " + self.y.to_command()
+   def to_command_args(self):
+      return (b"exact" if self.exact else b"") + self.x.to_command_args() + b" " + self.y.to_command_args()
 
 
 class Px(int):
-   def to_command(self):
+   def to_command_args(self):
       return str(self).encode()
 
 
 class Percent(int):
-   def to_command(self):
+   def to_command_args(self):
       return str(self).encode() + b"%"
-
-
-@dataclass
-class Dispatcher:
-   def to_command(self) -> tuple[bytes, ...]:
-      raise NotImplementedError
-
-   def dispatch(self):
-      execute(b"dispatch " + b" ".join(self.to_command()))
 
 
 @dataclass
@@ -252,7 +252,7 @@ class Exec(Dispatcher):
    # FIXME: Support type-safe rules.
    command: str
 
-   def to_command(self):
+   def to_command_args(self):
       return b"exec", self.command.encode()
 
 
@@ -262,7 +262,7 @@ class Execr(Dispatcher):
 
    command: str
 
-   def to_command(self):
+   def to_command_args(self):
       return b"execr", self.command.encode()
 
 
@@ -272,15 +272,15 @@ class Pass(Dispatcher):
 
    window: WindowIdentifier
 
-   def to_command(self):
-      return b"pass", self.window.to_command()
+   def to_command_args(self):
+      return b"pass", self.window.to_command_args()
 
 
 @dataclass
 class KillActive(Dispatcher):
    """Closes the active window (Not kill)."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"killactive",)
 
 
@@ -290,8 +290,8 @@ class CloseWindow(Dispatcher):
 
    window: WindowIdentifier
 
-   def to_command(self):
-      return b"closewindow", self.window.to_command()
+   def to_command_args(self):
+      return b"closewindow", self.window.to_command_args()
 
 
 @dataclass
@@ -300,8 +300,8 @@ class Workspace(Dispatcher):
 
    workspace: WorkspaceIdentifier
 
-   def to_command(self):
-      return b"workspace", self.workspace.to_command()
+   def to_command_args(self):
+      return b"workspace", self.workspace.to_command_args()
 
 
 @dataclass
@@ -312,8 +312,8 @@ class MoveToWorkspace(Dispatcher):
    silent: bool = False
    """Don't switch to workspace."""
 
-   def to_command(self):
-      return b"movetoworkspace" if self.silent else b"movetoworkspacesilent", self.workspace.to_command()
+   def to_command_args(self):
+      return b"movetoworkspace" if self.silent else b"movetoworkspacesilent", self.workspace.to_command_args()
 
 
 @dataclass
@@ -322,9 +322,9 @@ class ToggleFloating(Dispatcher):
 
    window: WindowIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.window:
-         return b"togglefloating", self.window.to_command()
+         return b"togglefloating", self.window.to_command_args()
       return (b"togglefloating",)
 
 
@@ -332,7 +332,7 @@ class ToggleFloating(Dispatcher):
 class Fullscreen(Dispatcher):
    """Toggles the active window's fullscreen state. Use `FullscreenMaximize` to keep gaps and bar(s)."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"fullscreen", b"0"
 
 
@@ -340,7 +340,7 @@ class Fullscreen(Dispatcher):
 class FullscreenMaximize(Dispatcher):
    """Toggles the active window's fullscreen state while keeping gaps and bar(s) visible."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"fullscreen", b"1"
 
 
@@ -348,7 +348,7 @@ class FullscreenMaximize(Dispatcher):
 class FakeFullscreen(Dispatcher):
    """Toggles the active window's internal fullscreen state without altering the geometry."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"fakefullscreen",)
 
 
@@ -358,7 +358,7 @@ class Dpms(Dispatcher):
 
    to: bool
 
-   def to_command(self):
+   def to_command_args(self):
       return b"dpms", b"on" if self.to else b"off"
 
 
@@ -366,7 +366,7 @@ class Dpms(Dispatcher):
 class DpmsToggle(Dispatcher):
    """Toggle all monitor's DPMS status. Do not use with a keybind directly."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"dpms", b"toggle"
 
 
@@ -376,9 +376,9 @@ class Pin(Dispatcher):
 
    window: WindowIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.window:
-         return b"pin", self.window.to_command()
+         return b"pin", self.window.to_command_args()
       return (b"pin",)
 
 
@@ -388,8 +388,8 @@ class MoveWindowToMontior(Dispatcher):
 
    monitor: MonitorIdentifier
 
-   def to_command(self):
-      return b"movewindow", self.monitor.to_command()
+   def to_command_args(self):
+      return b"movewindow", self.monitor.to_command_args()
 
 
 @dataclass
@@ -398,8 +398,8 @@ class SwapWindow(Dispatcher):
 
    direction: Direction
 
-   def to_command(self):
-      return b"swapwindow", self.direction.to_command()
+   def to_command_args(self):
+      return b"swapwindow", self.direction.to_command_args()
 
 
 @dataclass
@@ -408,7 +408,7 @@ class CenterWindow(Dispatcher):
 
    respect_monitor_reserved_area: bool = False
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"centerwindow", b"1") if self.respect_monitor_reserved_area else (b"centerwindow",)
 
 
@@ -419,10 +419,10 @@ class ResizeWindow(Dispatcher):
    resizeparams: ResizeParams
    window: WindowIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.window:
-         return b"resizewindowpixel", self.resizeparams.to_command(), self.window.to_command()
-      return b"resizeactive", self.resizeparams.to_command()
+         return b"resizewindowpixel", self.resizeparams.to_command_args(), self.window.to_command_args()
+      return b"resizeactive", self.resizeparams.to_command_args()
 
 
 @dataclass
@@ -432,17 +432,17 @@ class MoveWindow(Dispatcher):
    resizeparams: ResizeParams
    window: WindowIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.window:
-         return b"movewindowpixel", self.resizeparams.to_command(), self.window.to_command()
-      return b"moveactive", self.resizeparams.to_command()
+         return b"movewindowpixel", self.resizeparams.to_command_args(), self.window.to_command_args()
+      return b"moveactive", self.resizeparams.to_command_args()
 
 
 @dataclass
 class CycleNext(Dispatcher):
    """Focuses the next window in a workspace. Also see `CyclePrevious`."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"cyclenext",)
 
 
@@ -450,7 +450,7 @@ class CycleNext(Dispatcher):
 class CyclePrevious(Dispatcher):
    """Focuses the next window in a workspace. Also see `CycleNext`."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"cyclenext", b"prev"
 
 
@@ -458,7 +458,7 @@ class CyclePrevious(Dispatcher):
 class SwapNext(Dispatcher):
    """Swaps the active window with the next window in a workspace. Also see `SwapPrevious`."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"swapnext",)
 
 
@@ -466,7 +466,7 @@ class SwapNext(Dispatcher):
 class SwapPrevious(Dispatcher):
    """Swaps the active window with the next window in a workspace. Also see `SwapNext`."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"swapnext", b"prev"
 
 
@@ -476,8 +476,8 @@ class FocusWindow(Dispatcher):
 
    window: WindowIdentifier
 
-   def to_command(self):
-      return b"focuswindow", self.window.to_command()
+   def to_command_args(self):
+      return b"focuswindow", self.window.to_command_args()
 
 
 @dataclass
@@ -486,8 +486,8 @@ class FocusMonitor(Dispatcher):
 
    monitor: MonitorIdentifier
 
-   def to_command(self):
-      return b"focusmonitor", self.monitor.to_command()
+   def to_command_args(self):
+      return b"focusmonitor", self.monitor.to_command_args()
 
 
 @dataclass
@@ -496,7 +496,7 @@ class SplitRatio(Dispatcher):
 
    ratio: float
 
-   def to_command(self):
+   def to_command_args(self):
       return b"splitratio", str(self.ratio).encode()
 
 
@@ -504,7 +504,7 @@ class SplitRatio(Dispatcher):
 class ToggleOpaque(Dispatcher):
    """Toggles the active window's opaque state. Will override the opaque window rules."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"toggleopaque",)
 
 
@@ -514,8 +514,8 @@ class MoveCursorToCorner(Dispatcher):
 
    corner: Corner
 
-   def to_command(self):
-      return b"movecursortocorner", self.corner.to_command()
+   def to_command_args(self):
+      return b"movecursortocorner", self.corner.to_command_args()
 
 
 @dataclass
@@ -525,7 +525,7 @@ class MoveCursor(Dispatcher):
    x: int
    y: int
 
-   def to_command(self):
+   def to_command_args(self):
       return b"movecursor", str(self.x).encode() + b"," + str(self.y).encode()
 
 
@@ -536,7 +536,7 @@ class RenameWorkspace(Dispatcher):
    id: int
    name: str
 
-   def to_command(self):
+   def to_command_args(self):
       return b"renameworkspace", str(self.id).encode(), self.name.encode()
 
 
@@ -544,7 +544,7 @@ class RenameWorkspace(Dispatcher):
 class Exit(Dispatcher):
    """Exit Hyprland."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"exit",)
 
 
@@ -552,7 +552,7 @@ class Exit(Dispatcher):
 class ForceRendererReload(Dispatcher):
    """Forces the renderer to reload all resources and outputs."""
 
-   def to_command(self):
+   def to_command_args(self):
       return (b"forcerendererreload",)
 
 
@@ -563,10 +563,10 @@ class MoveWorkspaceToMonitor(Dispatcher):
    monitor: MonitorIdentifier
    workspace: WorkspaceIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.workspace:
-         return b"moveworkspacetomonitor", self.workspace.to_command(), self.monitor.to_command()
-      return b"movecurrentworkspacetomonitor", self.monitor.to_command()
+         return b"moveworkspacetomonitor", self.workspace.to_command_args(), self.monitor.to_command_args()
+      return b"movecurrentworkspacetomonitor", self.monitor.to_command_args()
 
 
 @dataclass
@@ -576,15 +576,15 @@ class SwapActiveWorkspaces(Dispatcher):
    monitor1: MonitorIdentifier
    monitor2: MonitorIdentifier
 
-   def to_command(self):
-      return b"swapactiveworkspaces", self.monitor1.to_command(), self.monitor2.to_command()
+   def to_command_args(self):
+      return b"swapactiveworkspaces", self.monitor1.to_command_args(), self.monitor2.to_command_args()
 
 
 @dataclass
 class WorkspaceOptAllFloat(Dispatcher):
    """Make all new windows floating (also floats/unfloats windows on toggle)."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"workspaceopt", b"allfloat"
 
 
@@ -592,7 +592,7 @@ class WorkspaceOptAllFloat(Dispatcher):
 class WorkspaceOptAllPseudo(Dispatcher):
    """Make all new windows pseudo (also pseudos/unpseudos windows on toggle)."""
 
-   def to_command(self):
+   def to_command_args(self):
       return b"workspaceopt", b"allpseudo"
 
 
@@ -606,7 +606,7 @@ class AlterZOrder(Dispatcher):
    zheight: ZHeight
    window: WindowIdentifier | None = None
 
-   def to_command(self):
+   def to_command_args(self):
       if self.window:
-         return b"alterzheight", self.zheight.to_command(), self.window.to_command()
-      return b"alterzheight", self.zheight.to_command()
+         return b"alterzheight", self.zheight.to_command_args(), self.window.to_command_args()
+      return b"alterzheight", self.zheight.to_command_args()
