@@ -40,11 +40,11 @@ class Mod(StrEnum):
    MOD2 = "MOD2"
    MOD3 = "MOD3"
    LOGO = "LOGO"
-   "Same as Mod.SUPER"
+   "Treated the same as `Mod.SUPER`"
    WIN = "WIN"
-   "Same as Mod.SUPER"
+   "Treated the same as `Mod.SUPER`"
    MOD4 = "MOD4"
-   "Same as Mod.SUPER"
+   "Treated the same as `Mod.SUPER`"
    MOD5 = "MOD5"
 
    # <https://github.com/hyprwm/Hyprland/blob/ffacd2efd1ca7fdf364a519c9d8d8644da28412b/src/managers/KeybindManager.cpp#L115>
@@ -199,4 +199,12 @@ class KeybindBuilder:
 
 
 def submap(keybind: Keybind):
+   """
+   Submap decorator. Apply on a function to create a submap, will be executed on application.
+
+   Usage:
+   >>> @submap(Mod.SUPER + Key('R'))
+   >>> def my_submap():
+   >>>    (Mod.EMPTY + Key('F')).bind(Exec('firefox'))
+   """
    return keybind.submap
