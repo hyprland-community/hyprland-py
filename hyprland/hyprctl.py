@@ -63,7 +63,7 @@ class Client(Struct):
    fullscreen_mode: int = field(name="fullscreenMode")
    fake_fullscreen: bool = field(name="fakeFullscreen")
    grouped: list[str]
-   swallowing: None  # FIXME: Type is unknown, is null for any case on my system.
+   swallowing: None | str  # FIXME: Type is unknown, is null for any case on my system.
 
 
 class Layers(Struct):
