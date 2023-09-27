@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import Callable
+
 from dataclasses import dataclass
-from typing import overload
-from .dispatch import Dispatcher, Exec
 from itertools import chain
+from typing import Callable, overload
+
+from .dispatch import Dispatcher, Exec
 from .socket import execute
 
 
