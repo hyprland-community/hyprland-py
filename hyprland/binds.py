@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
 from itertools import chain
 from typing import Callable, overload
 
 from .dispatch import Dispatcher
+from .hyprctl import Bind
 from .socket import execute
-from .info import Bind
-from enum import StrEnum
-
 
 # fmt: off
 # <https://github.com/swaywm/wlroots/blob/0855cdacb2eeeff35849e2e9c4db0aa996d78d10/include/wlr/types/wlr_keyboard.h#L28>

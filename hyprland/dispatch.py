@@ -6,10 +6,6 @@ from enum import StrEnum
 from .socket import execute
 
 
-def dispatch(dispatcher: Dispatcher):
-   execute(b"dispatch " b" ".join(dispatcher.to_command()))
-
-
 class CommandEnum(StrEnum):
    def to_command(self):
       return self.value.encode()
@@ -244,6 +240,9 @@ class Percent(int):
 class Dispatcher:
    def to_command(self) -> tuple[bytes, ...]:
       raise NotImplementedError
+
+   def dispatch(self):
+      execute(b"dispatch " + b" ".join(self.to_command()))
 
 
 @dataclass

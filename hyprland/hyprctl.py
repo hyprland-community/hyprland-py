@@ -3,7 +3,7 @@ from __future__ import annotations
 import msgspec.json as json
 from msgspec import Struct, field
 
-from .socket import query
+from .socket import execute, query
 
 
 class IncompleteWorkspace(Struct):
@@ -206,3 +206,21 @@ def global_shortcuts():
 
 def instances():
    return json.decode(query(b"instances"), type=list[Instance])
+
+
+def reload():
+   """Reload configuration"""
+   execute(b"reload")
+
+
+def kill():
+   """Kill Hyprland"""
+   execute(b"kill")
+
+
+def set_cursor_theme(theme: str, size: int):
+   execute(b"cursor " + theme.encode() + b" " + str(size).encode())
+
+
+def switch_xkb_layout(device: str, cmd: str):
+   execute(b"switchxkblayout " + device.encode() + b" " + cmd.encode())
