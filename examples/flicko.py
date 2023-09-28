@@ -2,20 +2,21 @@ from __future__ import annotations
 
 import asyncio
 
-from hyprland.binds import Key, Mod
-from hyprland.dispatch import (
+from hyprland import (
    Exec,
    Exit,
+   Key,
    KillActive,
+   Mod,
    MoveToWorkspace,
    SwitchWorkspace,
    WorkspaceID,
 )
-from hyprland.socket import execute_batch_async
+from hyprland.asyncio import execute_batch
 
 
 async def main():
-   await execute_batch_async(
+   await execute_batch(
       (Mod.SUPER + Key("M")).bind(Exit()),
       (Mod.SUPER + Key("Return")).bind(Exec("wezterm")),
       (Mod.SUPER + Key("Q")).bind(KillActive()),
