@@ -20,8 +20,8 @@ async def main():
       (Mod.SUPER + Key("M")).bind(Exit()),
       (Mod.SUPER + Key("Return")).bind(Exec("wezterm")),
       (Mod.SUPER + Key("Q")).bind(KillActive()),
-      *((Mod.SUPER + Key(str(i))).bind(SwitchWorkspace(WorkspaceID(i))) for i in range(1, 11)),
-      *((Mod.SUPER + Mod.SHIFT + Key(str(i))).bind(MoveToWorkspace(WorkspaceID(i))) for i in range(1, 11)),
+      *((Mod.SUPER + Key(i)).bind(SwitchWorkspace(WorkspaceID(i))) for i in range(1, 11)),
+      *((Mod.SUPER + Mod.SHIFT + Key(i)).bind(MoveToWorkspace(WorkspaceID(i))) for i in range(1, 11)),
    )
 
 
