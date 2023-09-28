@@ -295,7 +295,7 @@ class CloseWindow(Dispatcher):
 
 
 @dataclass
-class Workspace(Dispatcher):
+class SwitchWorkspace(Dispatcher):
    """Switch to the specified workspace."""
 
    workspace: WorkspaceIdentifier

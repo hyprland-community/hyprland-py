@@ -60,7 +60,7 @@
 
  - [CloseWindow](#CloseWindow)
 
- - [Workspace](#Workspace)
+ - [SwitchWorkspace](#SwitchWorkspace)
 
  - [MoveToWorkspace](#MoveToWorkspace)
 
@@ -717,12 +717,12 @@ def to_command_args(self):
     ...
 ```
 
-# `Workspace`
+# `SwitchWorkspace`
 
 
 ```py
 
-class Workspace:
+class SwitchWorkspace:
     ...
 ```
 
