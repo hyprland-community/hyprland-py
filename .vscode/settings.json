@@ -1,13 +1,14 @@
 {
-   "files.exclude": {
-      "**/.git": true,
-      "**/.svn": true,
-      "**/.hg": true,
-      "**/CVS": true,
-      "**/.DS_Store": true,
-      "**/Thumbs.db": true,
-      "**/__pycache__/": true,
-      "**/*.egg-info/": true,
-      "hyprland-wiki/": true
-   }
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__/": true,
+    "**/*.egg-info/": true,
+    "hyprland-wiki/": true,
+    "build/": true,
+  }
 }
