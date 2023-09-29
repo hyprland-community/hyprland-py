@@ -3,3 +3,5 @@ __pycache__
 dist
 examples/playground.py
 build/
+.mypy_cache/
+.ruff_cache/

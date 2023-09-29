@@ -67,7 +67,7 @@ pip install hyprland
 ### Development dependencies:
 
 -  [isort](https://pycqa.github.io/isort/)
--  [aspizu's black fork](https://github.com/aspizu/black)
+-  [black](https://github.com/psf/black/)
 -  [pyright](https://microsoft.github.io/pyright/)
 -  [documatic](https://github.com/aspizu/documatic)
 -  [ruff](https://github.com/astral-sh/ruff)

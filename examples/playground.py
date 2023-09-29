@@ -4,12 +4,13 @@ import asyncio
 
 from rich import print
 
-from hyprland.hyprctl import active_window_async
+from hyprland import hyprctl
 
 
 async def main():
-   client = await active_window_async()
-   print(client)
+    client = await hyprctl.active_window_async()
+    await hyprctl.reload_async()
+    print(client)
 
 
 asyncio.run(main())
