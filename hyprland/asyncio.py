@@ -1,3 +1,6 @@
+"""Async commands (Use `hyprland.syncio` for blocking versions of the same)."""
+from __future__ import annotations
+
 from hyprctl import active_window_async as active_window
 from hyprctl import active_workspace_async as active_workspace
 from hyprctl import binds_async as binds

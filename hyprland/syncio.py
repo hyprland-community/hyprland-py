@@ -1,3 +1,6 @@
+"""Sync commands (Use `hyprland.asyncio` for async versions of the same)."""
+from __future__ import annotations
+
 from hyprctl import (
    active_window,
    active_workspace,

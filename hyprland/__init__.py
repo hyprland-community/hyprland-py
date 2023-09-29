@@ -1,3 +1,4 @@
+"""An unofficial type-safe, async API wrapper for Hyprland's IPC for Python."""
 from __future__ import annotations
 
 from hyprctl import (

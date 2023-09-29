@@ -7,7 +7,7 @@ name = "hyprland"
 version = "0.2.54"
 authors = [
   { name = "flicko", email = "flickerdroid211@gmail.com" },
-  { name = "jan Apisu", email = "aspizu@protonmail.com" }
+  { name = "jan Apisu", email = "aspizu@protonmail.com" },
 ]
 description = "An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua"
 readme = "README.md"
@@ -29,3 +29,12 @@ line-length = 128
 typeCheckingMode = "strict"
 reportUnknownMemberType = false
 reportUnknownArgumentType = false
+
+[tool.ruff]
+line-length = 128
+exclude = ["hyprland/variables.py", "examples/", "tools/"]
+select = ["ALL"]
+ignore = ["D", "ANN", "COM", "A003", "TD001", "TD002", "S108"]
+
+[tool.ruff.isort]
+required-imports = ["from __future__ import annotations"]

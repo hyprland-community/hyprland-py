@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import msgspec.json as json
-from msgspec import Struct, field
+from msgspec import Struct, field, json
 
 from .socket import execute, execute_async, query, query_async
 

@@ -3,11 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 from itertools import chain
-from typing import Callable, overload
+from typing import TYPE_CHECKING, overload
 
-from .dispatch import Dispatcher
-from .hyprctl import Bind
 from .socket import Command, execute
+
+if TYPE_CHECKING:
+   from collections.abc import Callable
+
+   from .dispatch import Dispatcher
+   from .hyprctl import Bind
 
 # fmt: off
 # <https://github.com/swaywm/wlroots/blob/0855cdacb2eeeff35849e2e9c4db0aa996d78d10/include/wlr/types/wlr_keyboard.h#L28>
@@ -40,9 +44,9 @@ class Keyunbinder(Command):
 
 
 class Key(str):
-   """See <https://wiki.hyprland.org/Configuring/Binds/#uncommon-syms--binding-with-a-keycode>"""
+   """See <https://wiki.hyprland.org/Configuring/Binds/#uncommon-syms--binding-with-a-keycode>."""
 
-   ...
+   __slots__ = ()
 
 
 class Mod(StrEnum):
@@ -93,7 +97,7 @@ class Mod(StrEnum):
    def __add__(self, other: Mod) -> KeybindBuilder:
       ...
 
-   def __add__(self, other: Key | Mod) -> Keybind | KeybindBuilder:  # type: ignore
+   def __add__(self, other: Key | Mod) -> Keybind | KeybindBuilder:  # pyright: ignore[reportIncompatibleMethodOverride]
       return KeybindBuilder([self]) + other
 
 
@@ -211,8 +215,7 @@ class KeybindBuilder:
    def __add__(self, other: Mod | Key):
       if isinstance(other, Mod):
          return KeybindBuilder([*self._mods, other])
-      else:
-         return Keybind(self._mods, other)
+      return Keybind(self._mods, other)
 
 
 def submap(keybind: Keybind):

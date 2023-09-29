@@ -6,3 +6,4 @@ isort --profile=black .
 black .
 pyright .
 python -m documatic
+ruff check .

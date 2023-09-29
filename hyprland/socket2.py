@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 import asyncio
-from typing import Any, Callable, Coroutine
+from collections.abc import Callable, Coroutine
+from typing import Any
 
 from .errors import HyprlandError
 from .socket import HYPRLAND_SOCKET2_ADDRESS
 
 
 async def socket2():
-   reader, _DO_NOT_DEL = await asyncio.open_unix_connection(HYPRLAND_SOCKET2_ADDRESS)
+   reader, _do_not_del = await asyncio.open_unix_connection(HYPRLAND_SOCKET2_ADDRESS)
    while data := await reader.readuntil(b"\n"):
       yield data[:-1].split(b">>")
 
@@ -176,4 +179,5 @@ class Events:
                if self._monitoradded:
                   await self._monitoradded(event[1].decode())
             case a:
-               raise HyprlandError("Unhandled event", a)
+               msg = "Unhandled event"
+               raise HyprlandError(msg, a)

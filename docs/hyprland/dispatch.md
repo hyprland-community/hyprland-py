@@ -548,7 +548,7 @@ class ResizeParams:
 
 ```py
 
-def __init__(self, x: int | Percent, y: int | Percent, exact: bool):
+def __init__(self, x: int | Percent, y: int | Percent):
     ...
 ```
 
@@ -918,10 +918,11 @@ class Pin:
     ...
 ```
 
-Pin the window (Visible on all workspaces). The window must be a floating window. If `window` is not given, the active window will be selected.
+Pin the window (Visible on all workspaces). The window must be a floating window. If `window` is not given, the active window
 
 
 
+will be selected.
 
 
 ## `to_command_args`

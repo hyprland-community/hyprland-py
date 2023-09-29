@@ -85,7 +85,7 @@ class Key:
     ...
 ```
 
-See <https://wiki.hyprland.org/Configuring/Binds/#uncommon-syms--binding-with-a-keycode>
+See <https://wiki.hyprland.org/Configuring/Binds/#uncommon-syms--binding-with-a-keycode>.
 
 
 

@@ -99,11 +99,12 @@ class WorkspaceRelative:
    _: int
 
    def to_command_args(self):
-      if 0 < self._:
+      if self._ > 0:
          return b"+" + str(self._).encode()
-      elif self._ < 0:
+      if self._ < 0:
          return b"-" + str(self._).encode()
-      raise ValueError("workspace offset is 0.", self._)
+      msg = "workspace offset is 0."
+      raise ValueError(msg, self._)
 
 
 @dataclass
@@ -113,11 +114,12 @@ class WorkspaceOnMonitorRelative:
    _: int
 
    def to_command_args(self):
-      if 0 < self._:
+      if self._ > 0:
          return b"m+" + str(self._).encode()
-      elif self._ < 0:
+      if self._ < 0:
          return b"m-" + str(self._).encode()
-      raise ValueError("workspace offset is 0.", self._)
+      msg = "workspace offset is 0."
+      raise ValueError(msg, self._)
 
 
 @dataclass
@@ -127,11 +129,12 @@ class WorkspaceOnMonitorRelativeIncludingEmpty:
    _: int
 
    def to_command_args(self):
-      if 0 < self._:
+      if self._ > 0:
          return b"r+" + str(self._).encode()
-      elif self._ < 0:
+      if self._ < 0:
          return b"r-" + str(self._).encode()
-      raise ValueError("workspace offset is 0.", self._)
+      msg = "workspace offset is 0."
+      raise ValueError(msg, self._)
 
 
 @dataclass
@@ -141,11 +144,12 @@ class WorkspaceOpenRelative:
    _: int
 
    def to_command_args(self):
-      if 0 < self._:
+      if self._ > 0:
          return b"e+" + str(self._).encode()
-      elif self._ < 0:
+      if self._ < 0:
          return b"e-" + str(self._).encode()
-      raise ValueError("workspace offset is 0.", self._)
+      msg = "workspace offset is 0."
+      raise ValueError(msg, self._)
 
 
 @dataclass
@@ -167,8 +171,7 @@ class WorkspaceSpecial:
    def to_command_args(self):
       if self._:
          return b"special:" + self._.encode()
-      else:
-         return b"special"
+      return b"special"
 
 
 # `WorkspaceSpecial` is not included here, as it is only supported on the `MoveToWorkspace` dispatcher.
@@ -206,11 +209,12 @@ class MonitorRelative:
    _: int
 
    def to_command_args(self):
-      if 0 < self._:
+      if self._ > 0:
          return b"+" + str(self._).encode()
-      elif self._ < 0:
+      if self._ < 0:
          return b"-" + str(self._).encode()
-      raise ValueError("workspace offset is 0.", self._)
+      msg = "workspace offset is 0."
+      raise ValueError(msg, self._)
 
 
 MonitorIdentifier = MonitorID | MonitorCurrent | MonitorRelative | Direction
@@ -222,7 +226,7 @@ class ResizeParams:
    y: Px | Percent
    exact: bool = False
 
-   def __init__(self, x: int | Percent, y: int | Percent, exact: bool = False):
+   def __init__(self, x: int | Percent, y: int | Percent, *, exact: bool = False):
       if not isinstance(x, Percent):
          x = Px(x)
       if not isinstance(y, Percent):
@@ -268,7 +272,9 @@ class Execr(Dispatcher):
 
 @dataclass
 class Pass(Dispatcher):
-   """Passes the key (with mods) to a specified window. Can be used as a workaround to global keybinds not working on Wayland."""
+   """
+   Passes the key (with mods) to a specified window. Can be used as a workaround to global keybinds not working on Wayland.
+   """
 
    window: WindowIdentifier
 
@@ -372,7 +378,10 @@ class DpmsToggle(Dispatcher):
 
 @dataclass
 class Pin(Dispatcher):
-   """Pin the window (Visible on all workspaces). The window must be a floating window. If `window` is not given, the active window will be selected."""
+   """
+   Pin the window (Visible on all workspaces). The window must be a floating window. If `window` is not given, the active window
+   will be selected.
+   """
 
    window: WindowIdentifier | None = None
 

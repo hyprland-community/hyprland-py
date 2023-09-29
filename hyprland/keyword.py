@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import msgspec.json as json
-from msgspec import Struct, field
+from msgspec import Struct, field, json
 
 from .socket import Command, query
 
@@ -36,7 +35,7 @@ class KeywordBool:
    def get(self):
       return get_option(self.path).integer != 0
 
-   def set(self, value: bool):
+   def set(self, value: bool):  # noqa: FBT001
       return SetOption(self.path, "1" if value else "0")
 
 
