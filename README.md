@@ -1,77 +1,83 @@
-# Hyprland-py
-An unofficial async python wrapper for Hyprland's IPC supposed to somewhat work like awesomewm api in lua
+# Hyprland for Python
 
+![GitHub repo size](https://img.shields.io/github/repo-size/aspizu/hyprland-py)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-# Todo
+An unofficial [type-safe](https://microsoft.github.io/pyright/), async API wrapper for [Hyprland](https://hyprland.org/)'s [IPC](https://wiki.hyprland.org/IPC/) for [Python](https://www.python.org/).
 
-- [x] async sockets
-- [x] change config options
-- [x] event listeners
-- [x] keybinds
-- [ ] windowrules
-- [x] hyprland info
-- [x] misc hyprland commands(change workspace, move active window etc...)*(dispatchers)*
-- [ ] a nice way to handle colors
-- [ ] build `settings.py` file based on current hl version
-- [x] get config values from the current hyprland config instead of using default values
-> getting binds still dont work
-- [ ] docs
-- [ ] widgets??
+## Examples
 
-# Install
+[examples/flicko.py](./examples/flicko.py)
 
-### git
-
-from git
 ```py
-pip install git+https://github.com/hyprland-community/hyprland-py
+import asyncio
+from hyprland import (
+   Exec,
+   Exit,
+   Key,
+   KillActive,
+   Mod,
+   MoveToWorkspace,
+   SwitchWorkspace,
+   WorkspaceID,
+)
+from hyprland.asyncio import execute_batch
+
+
+async def main():
+   await execute_batch(
+      (Mod.SUPER + Key("M")).bind(Exit()),
+      (Mod.SUPER + Key("Return")).bind(Exec("wezterm")),
+      (Mod.SUPER + Key("Q")).bind(KillActive()),
+      *((Mod.SUPER + Key(i)).bind(SwitchWorkspace(WorkspaceID(i))) for i in range(1, 11)),
+      *((Mod.SUPER + Mod.SHIFT + Key(i)).bind(MoveToWorkspace(WorkspaceID(i))) for i in range(1, 11)),
+   )
+
+
+asyncio.run(main())
 ```
 
-### release
+## Documentation
 
-from [pypi](https://pypi.org/project/hyprland)
-```py
+View the full documentation in [docs/hyprland/](./docs/hyprland).
+
+## Install
+
+### Dependencies:
+
+-  [msgspec](https://jcristharif.com/msgspec/) for JSON parsing.
+
+### From source
+
+```sh
+git clone https://github.com/aspizu/hyprland-py
+cd hyprland-py
+pip install -r requirements.txt
+pip install .
+```
+
+### From [PyPI](https://pypi.org/project/hyprland)
+
+```sh
 pip install hyprland
 ```
 
-# Example
-```py
-import hyprland
-from hyprland import Bind, BindFlag
+## Development
 
-class Config(hyprland.Events):
-    def __init__(self):
-        self.c = hyprland.Config()
-        super().__init__()
+### Development dependencies:
 
-    async def terminal(self):
-        await hyprland.Dispatch.exec("kitty --single-instance")
-    
-    async def on_connect(self):
-        print("Connected to hyprland")
-        
-        await self.c.add_binds([
-            # general binds
-            Bind(["SUPER","m"],hyprland.Dispatch.exit),
+-  [isort](https://pycqa.github.io/isort/)
+-  [black](https://github.com/psf/black/)
+-  [pyright](https://microsoft.github.io/pyright/)
+-  [documatic](https://github.com/aspizu/documatic)
+-  [ruff](https://github.com/astral-sh/ruff)
 
-            # mouse binds
-            Bind(["SUPER","mouse:272"],"movewindow",BindFlag.mouse),
-            Bind(["SUPER","mouse:273"],"resizewindow",BindFlag.mouse),
-
-            # keyboard binds
-            Bind(["SUPER","return"],self.terminal),
-            Bind(["SUPER","q"],hyprland.Dispatch.kill_active),
-        ])
-
-        # workspace binds
-        for i in range(1,11):
-            await self.c.add_bind(Bind([f"SUPER",str(i) if i!= 10 else str(0)],hyprland.Dispatch.workspace,args=[i]))
-        
-        for i in range(1,11):
-            await self.c.add_bind(Bind([f"ALT",str(i) if i!= 10 else str(0)],hyprland.Dispatch.move_to_workspace,args=[i]))
-
-    
-c = Config()
-
-c.async_connect()
+```sh
+git clone https://github.com/aspizu/hyprland-py
+cd hyprland-py
+git submodule init
+git submodule update
+pip install -r requirements.txt
+./build.sh
+pip install -e .
 ```
