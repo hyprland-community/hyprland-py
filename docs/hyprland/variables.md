@@ -4,53 +4,26 @@
 # variables
 
 
- - [General](#General)
-
- - [Decoration](#Decoration)
-
- - [Blur](#Blur)
-
- - [Input](#Input)
+ - [Touchdevice](#Touchdevice)
 
  - [Touchpad](#Touchpad)
 
- - [Touchdevice](#Touchdevice)
+ - [Input](#Input)
+
+ - [Blur](#Blur)
+
+ - [Decoration](#Decoration)
+
+ - [General](#General)
 
 
 
-# `General`
-
-
-```py
-
-class General:
-    ...
-```
-
-# `Decoration`
+# `Touchdevice`
 
 
 ```py
 
-class Decoration:
-    ...
-```
-
-# `Blur`
-
-
-```py
-
-class Blur:
-    ...
-```
-
-# `Input`
-
-
-```py
-
-class Input:
+class Touchdevice:
     ...
 ```
 
@@ -63,12 +36,39 @@ class Touchpad:
     ...
 ```
 
-# `Touchdevice`
+# `Input`
 
 
 ```py
 
-class Touchdevice:
+class Input:
+    ...
+```
+
+# `Blur`
+
+
+```py
+
+class Blur:
+    ...
+```
+
+# `Decoration`
+
+
+```py
+
+class Decoration:
+    ...
+```
+
+# `General`
+
+
+```py
+
+class General:
     ...
 ```
 
