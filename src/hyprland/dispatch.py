@@ -101,7 +101,7 @@ class Dispatch:
     async def bring_active_to_top():
         await async_command_send('/dispatch bringactivetotop')
     
-    async def toggles_pecial_workspace(sw=None):
+    async def toggle_special_workspace(sw=None):
         await async_command_send(f'/dispatch togglespecialworkspace {sw if sw else ""}')
 
     ### end of the actual dispatch commands
