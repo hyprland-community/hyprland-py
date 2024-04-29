@@ -10,14 +10,14 @@ if TYPE_CHECKING:
 
 def command_send(cmd:str):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-        sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+        sock.connect(f"{os.getenv('XDG_RUNTIME_DIR')}/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
         sock.send(cmd.encode())
         resp = sock.recv(100)
         if resp != b"ok":
             return Exception(f"Hyprland Error: {cmd} : {resp}")
 
 async def async_command_send(cmd:str, ignore_ok:bool=False):
-    reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
+    reader, writer = await asyncio.open_unix_connection(f"{os.getenv('XDG_RUNTIME_DIR')}/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket.sock")
     writer.write(cmd.encode())
     await writer.drain()
     resp = await reader.read(100)
@@ -88,7 +88,7 @@ class EventListener:
     
     def start(self):
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
+            sock.connect(f"{os.getenv('XDG_RUNTIME_DIR')}/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
             yield "connect"
             while True:
                 data = sock.recv(1024)
@@ -98,7 +98,7 @@ class EventListener:
 
 
     async def async_start(self):
-        reader, writer = await asyncio.open_unix_connection(f"/tmp/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
+        reader, writer = await asyncio.open_unix_connection(f"{os.getenv('XDG_RUNTIME_DIR')}/hypr/{os.getenv('HYPRLAND_INSTANCE_SIGNATURE')}/.socket2.sock")
         yield "connect"
 
         buffer = b""
