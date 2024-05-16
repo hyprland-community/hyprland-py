@@ -16,9 +16,7 @@ class Config(settings.Defaults):
         self.start_bind_listener()
     
     async def from_conf()->'Config':
-        from rich.console import Console
         config = Config()
-        console = Console()
         sections = inspect.getmembers(settings.Defaults(), lambda a:not inspect.isroutine(a))
         sections = [a for a in sections if not(a[0].startswith('__') and a[0].endswith('__'))]
         for section in sections:
