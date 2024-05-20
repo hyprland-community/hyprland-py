@@ -1,4 +1,10 @@
 from dataclasses import dataclass
+from ..info import fetch_workspaces
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..obj.workspace import Workspace
 
 @dataclass
 class Monitor:
@@ -28,11 +34,11 @@ class Monitor:
     current_format:str
     available_modes:list[str]
 
-    def fetch_active_workspace(self):
-        ...
+    def fetch_active_workspace(self)->'Workspace':
+        return fetch_workspaces(id=self.active_workspace_id)
 
-    def fetch_special_workspace(self):
-        ...
+    def fetch_special_workspace(self)->'Workspace':
+        return fetch_workspaces(id=self.special_workspace_id)
 
     @staticmethod
     def from_json(data:dict):

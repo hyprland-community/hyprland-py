@@ -1,10 +1,17 @@
 from dataclasses import dataclass
-from enum import StrEnum
 from .workspace import WorkspaceIdentity
+
+from ..info import fetch_workspaces,fetch_monitors
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .workspace import Workspace
+    from .monitor import Monitor
 
 @dataclass
 class WindowRule:
-    rules : str
+    rule : str
 
     # static rules
 
@@ -300,16 +307,16 @@ class Window:
     swallowing:int
     focus_history_id:int
 
-    def fetch_workspace(self):
-        ...
+    def fetch_workspace(self)->'Workspace':
+        return fetch_workspaces(id=self.workspace_id)
 
-    def fetch_monitor(self):
-        ...
+    def fetch_monitor(self)->'Monitor':
+        return fetch_monitors(id=self.monitor_id)
     
     def fetch_decorations(self):
         ...
 
-    def identifier(self)->WindowIdentity:
+    def identifier(self)->'WindowIdentity':
         return WindowIdentity.from_window(self)
 
     @staticmethod
