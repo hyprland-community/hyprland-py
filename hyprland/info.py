@@ -103,6 +103,6 @@ def fetch_rolling_log() -> list:
     """tail of the hyprland log"""
     return command_send("rollinglog",return_json=False)
 
-def locked() -> bool:
+def fetch_locked_state() -> bool:
     """whether the current session is locked"""
     return command_send("locked", return_json=False)
