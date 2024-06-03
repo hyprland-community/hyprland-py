@@ -12,6 +12,7 @@ An unofficial python wrapper for Hyprland's IPC
 - [ ] handle color values
 - [x] socket commands
 - [ ] docs
+- [ ] github action to update config options automagically
 
 # Install
 
