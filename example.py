@@ -19,7 +19,20 @@ print(hyprland.fetch_version())
 
 async def main():
     print(hyprland.fetch_workspaces())
-    await hypr.async_connect()
+    await hypr.async_connect()\
+    
+# print(hyprland.Workspace.from_id(1))
 
 print("starting")
+
+config = hyprland.config.Default()
+config.animations.enabled = True
+
+
+workspace = hyprland.Workspace.from_id(1)
+workspace.fetch_windows()
+
+# fetch all workspaces
+hyprland.fetch_workspaces()
+
 asyncio.run(main())

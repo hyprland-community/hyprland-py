@@ -22,7 +22,6 @@ def fetch_monitors(all:bool=False, id:Optional[int]=None)->list[Monitor]:
 
 def fetch_workspaces(id:Optional[int]=None)->list[Workspace] | Workspace:
     """lists all workspaces"""
-
     workspaces = []
 
     for data in command_send("workspaces"):

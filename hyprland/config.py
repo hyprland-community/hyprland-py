@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from .gen.variables import Default
 
 @dataclass
 class Color:
@@ -98,7 +99,4 @@ class Gradient:
         else:
             deg = 0
             colors = segments
-
-        
-
     

@@ -1,4 +1,4 @@
-from util import Section
+from ._util import Section
 
 class General(Section):
     __section_name = "General"

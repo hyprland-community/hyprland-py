@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from .monitor import Monitor
 from .window import Window
 
-from ..info import fetch_workspaces
+from ..socket import command_send
 
 @dataclass
 class WorkspaceIdentity:
@@ -102,4 +102,6 @@ class Workspace:
     
     @staticmethod
     def from_id(id:int):
-        return fetch_workspaces(id=id)
+        for data in command_send("workspaces"):
+            if id and data["id"] == id:
+                return Workspace.from_json(data)

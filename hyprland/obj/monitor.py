@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from ..info import fetch_workspaces
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..obj.workspace import Workspace
+
+from ..socket import command_send
 
 @dataclass
 class Monitor:
@@ -35,10 +36,14 @@ class Monitor:
     available_modes:list[str]
 
     def fetch_active_workspace(self)->'Workspace':
-        return fetch_workspaces(id=self.active_workspace_id)
+        for data in command_send("workspaces"):
+            if id and data["id"] == self.active_workspace_id:
+                return Workspace.from_json(data)
 
     def fetch_special_workspace(self)->'Workspace':
-        return fetch_workspaces(id=self.special_workspace_id)
+        for data in command_send("workspaces"):
+            if id and data["id"] == self.special_workspace_id:
+                return Workspace.from_json(data)
 
     @staticmethod
     def from_json(data:dict):

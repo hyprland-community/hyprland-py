@@ -1,11 +1,9 @@
 from dataclasses import dataclass
-from .workspace import WorkspaceIdentity
-
-from ..info import fetch_workspaces,fetch_monitors
-
+from ..socket import command_send
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from .workspace import WorkspaceIdentity
     from .workspace import Workspace
     from .monitor import Monitor
 
@@ -72,7 +70,7 @@ class WindowRule:
         return WindowRule(f"monitor {id}")
     
     @staticmethod
-    def workspace(w:WorkspaceIdentity, silent:bool=False):
+    def workspace(w:'WorkspaceIdentity', silent:bool=False):
         """sets the workspace on which a window should open"""
         return WindowRule(f"workspace {w.identifier}{' silent' if silent else ''}")
     
@@ -308,10 +306,14 @@ class Window:
     focus_history_id:int
 
     def fetch_workspace(self)->'Workspace':
-        return fetch_workspaces(id=self.workspace_id)
+        for data in command_send("workspaces"):
+            if id and data["id"] == self.workspace_id:
+                return Workspace.from_json(data)
 
     def fetch_monitor(self)->'Monitor':
-        return fetch_monitors(id=self.monitor_id)
+        for data in command_send("monitors all"):
+            if data["id"] == self.monitor_id:
+                return Monitor.from_json(data)
     
     def fetch_decorations(self):
         ...
