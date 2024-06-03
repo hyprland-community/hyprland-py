@@ -99,7 +99,7 @@ def fetch_config_errors() -> list:
     """lists all current config parsing errors"""
     return command_send("configerrors")
 
-def fetch_rolling_log() -> list:
+def fetch_rolling_log() -> str:
     """tail of the hyprland log"""
     return command_send("rollinglog",return_json=False)
 

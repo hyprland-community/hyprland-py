@@ -5,6 +5,8 @@ from .info import *
 
 from .dispatch import *
 
-from .obj.monitor import Monitor
-from .obj.workspace import Workspace
-from .obj.window import Window, WindowIdentity
+from .config import *
+
+from .obj.monitor import *
+from .obj.workspace import *
+from .obj.window import *
